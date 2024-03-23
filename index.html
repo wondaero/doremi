@@ -123,6 +123,12 @@
         .note12{top: 21px;}
         .note13{top: 15px;}
 
+        .piano-wrapper{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .piano{
             position: relative;
             display: flex;
@@ -203,23 +209,24 @@
             <li class="note13"><span></span></li> -->
         </ul>
     </div>
-
-    <div id="piano" class="piano">
-        <div data-id="note2" class="black"></div>
-        <div data-id="note4" class="black"></div>
-        <div data-id="note7" class="black"></div>
-        <div data-id="note9" class="black"></div>
-        <div data-id="note11" class="black"></div>
-
-
-        <div data-id="note1" class="white"></div>
-        <div data-id="note3" class="white"></div>
-        <div data-id="note5" class="white"></div>
-        <div data-id="note6" class="white"></div>
-        <div data-id="note8" class="white"></div>
-        <div data-id="note10" class="white"></div>
-        <div data-id="note12" class="white"></div>
-        <div data-id="note13" class="white"></div>
+    <div class="piano-wrapper">
+        <div id="piano" class="piano">
+            <div data-id="note2" class="black"></div>
+            <div data-id="note4" class="black"></div>
+            <div data-id="note7" class="black"></div>
+            <div data-id="note9" class="black"></div>
+            <div data-id="note11" class="black"></div>
+    
+    
+            <div data-id="note1" class="white"></div>
+            <div data-id="note3" class="white"></div>
+            <div data-id="note5" class="white"></div>
+            <div data-id="note6" class="white"></div>
+            <div data-id="note8" class="white"></div>
+            <div data-id="note10" class="white"></div>
+            <div data-id="note12" class="white"></div>
+            <div data-id="note13" class="white"></div>
+        </div>
     </div>
 
     <footer>
@@ -320,15 +327,17 @@
         submit.addEventListener('click', () => {
             let hasWrong = false;
 
+            console.log(state.noteList);
+
             for(let i = 0; i < 5; i++){
-                if(+state.noteList[i].note.substr(4) !== +state.quizNoteLst[i]){
+                if(+state.noteList[i].note.substr(4) !== +state.quizNoteList[i]){
                     hasWrong = true;
                     break;
                 }
             }
 
             
-            alert(hasWrong ? '땡!' : '올!');
+            alert(hasWrong ? '땡!!!' : '올!!!');
         })
         
         // async function startMelody(){
