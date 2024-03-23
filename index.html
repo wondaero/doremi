@@ -3,23 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://wondaero.github.io/assets/css/normalize.css" >
     <title>도레미</title>
     <style>
         header{
             text-align: right;
             margin-bottom: 10px;
+            padding: 10px;
         }
         header button{
             vertical-align: top;
             background: orange;
             border: 0;
             display: inline-flex;
-            width: 60px;
+            width: 30px;
             height: 30px;
             align-items: center;
             justify-content: center;
             color: #fff;
-            border-radius: 5px;
+            border-radius: 50%;
+        }
+        header button span{
+            display: block;
+            width: 18px;
+            height: 12px;
+            border-left: 9px solid #fff;
+            border-right: 9px solid transparent;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            box-sizing: border-box;
+            position: relative;
+            left: 6px;
+        }
+        h3{
+            padding: 20px;
+            position: relative;
+        }
+        h3 span{
+            background: #f00;
+            color: #fff;
+            position: relative;
+            font-size: 12px;
+            border-radius: 10px;
+            height: 10px;
+            min-width: 12px;
+            width: auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px 5px;
+            top: -15px;
+            display: none;
         }
         .sheet-music{
             position: relative;
@@ -163,7 +197,7 @@
             margin-top: 30px;
             text-align: center;
         }
-        footer button{
+        footer button.btn-submit{
             vertical-align: top;
             background: orange;
             border: 0;
@@ -174,15 +208,41 @@
             justify-content: center;
             color: #fff;
             border-radius: 5px;
+            display: none;
         }
+        
+        footer .after-submit{
+            align-items: center;
+            justify-content: center;
+        }
+        footer .after-submit button{
+            vertical-align: top;
+            background: orange;
+            border: 0;
+            display: inline-flex;
+            width: 120px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            border-radius: 5px;
+            margin-left: 8px;
+        }
+        footer .after-submit button:last-of-type{
+            margin-right: 0;
+        }
+        
+        .audios{height: 0;}
+
+        .none{display: none;}
 
     </style>
 </head>
 <body>
     <header>
-        <button id="btn_start">플레이</button>
+        <button id="btn_start"><span></span></button>
     </header>
-    <h3>들리는 음에 맞춰 건반을 쳐주세요.</h3>
+    <h3>들리는 음에 맞춰 건반을 쳐주세요.<span id="repeatCnt"></span></h3>
 
     <div class="sheet-music">
         <div class="lines">
@@ -228,10 +288,30 @@
             <div data-id="note13" class="white"></div>
         </div>
     </div>
-
     <footer>
-        <button id="submit">제출</button>
+        <button id="btn_submit" class="btn-submit">제출</button>
+        <div id="afterSubmitBtns" class="after-submit none">
+            <button id="btn_playMyNote">내꺼</button>
+            <button id="btn_playQuizNote">문제</button>
+            <button id="btn_reset">초기화</button>
+        </div>
     </footer>
+<!-- 
+    <div class="audios">
+        <audio id="audio-note1" controls src="./assets/audio/note1.mp3"></audio>
+        <audio id="audio-note2" controls src="./assets/audio/note2.mp3"></audio>
+        <audio id="audio-note3" controls src="./assets/audio/note3.mp3"></audio>
+        <audio id="audio-note4" controls src="./assets/audio/note4.mp3"></audio>
+        <audio id="audio-note5" controls src="./assets/audio/note5.mp3"></audio>
+        <audio id="audio-note6" controls src="./assets/audio/note6.mp3"></audio>
+        <audio id="audio-note7" controls src="./assets/audio/note7.mp3"></audio>
+        <audio id="audio-note8" controls src="./assets/audio/note8.mp3"></audio>
+        <audio id="audio-note9" controls src="./assets/audio/note9.mp3"></audio>
+        <audio id="audio-note10" controls src="./assets/audio/note10.mp3"></audio>
+        <audio id="audio-note11" controls src="./assets/audio/note11.mp3"></audio>
+        <audio id="audio-note12" controls src="./assets/audio/note12.mp3"></audio>
+        <audio id="audio-note13" controls src="./assets/audio/note13.mp3"></audio>
+    </div> -->
 
     <script>
         const char = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -240,6 +320,7 @@
         const state = {
             noteList: [],
             quizNoteList: [],
+            afterSubmit: false
         };
 
         piano.querySelectorAll('[data-id]').forEach(k => {
@@ -265,6 +346,7 @@
             return new Promise((resolve, rej) => {
                 const audio = new Audio();
                 audio.src = `./assets/audio/${note}.mp3`;
+                // const audio = document.querySelector('#audio-' + note);
                 audio.play();
 
                 audio.addEventListener('ended', function(){
@@ -273,18 +355,30 @@
             });
         }
 
-        async function startMelody(){
-            let note;
-            for(let i = 0; i < 5; i++){
-                note = getRandomNum(1, 13);
-                state.quizNoteList.push(note);
-                await sound(`note${getRandomNum(1, 13)}`);
+        async function startMelody(arr, cb){
+            for(let i = 0; i < arr.length; i++){
+                await sound(arr[i]);
             }
+            if(cb && typeof cb === 'function') cb();
         }
 
         btn_start.addEventListener('click', () => {
-            if(state.quizNoteList.length) return;
-            startMelody();
+            if(state.afterSubmit === true) return;
+
+            if(!state.quizNoteList.length){
+                let note;
+                for(let i = 0; i < 5; i++){
+                    note = getRandomNum(1, 13);
+                    state.quizNoteList.push(note);
+                }
+            }else{
+                repeatCnt.style.display = 'inline-flex';
+                repeatCnt.textContent = (+repeatCnt.textContent || 0) + 1;
+            };
+
+            startMelody(state.quizNoteList.map(x => x = 'note' + x), () => {
+                btn_submit.style.display = 'inline-flex';
+            });
         });
 
         function getNoteId(len = 10){
@@ -297,7 +391,6 @@
         }
 
         function setNoteUI(){
-            console.log(state.noteList);
             pickedNoteList.innerHTML = '';
             state.noteList.forEach(note => {
                 pickedNoteList.appendChild(tmpl(note));
@@ -322,12 +415,14 @@
             setNoteUI();
         }
 
-
-
-        submit.addEventListener('click', () => {
+        btn_submit.addEventListener('click', () => {
+            if(state.noteList.length !== 5){
+                alert('노트를 더 채워주세요.');
+                return;
+            }
+            state.afterSubmit = true;
             let hasWrong = false;
 
-            console.log(state.noteList);
 
             for(let i = 0; i < 5; i++){
                 if(+state.noteList[i].note.substr(4) !== +state.quizNoteList[i]){
@@ -336,19 +431,23 @@
                 }
             }
 
+            btn_submit.style.display = 'none';
+            afterSubmitBtns.style.display = 'flex';
             
-            alert(hasWrong ? '땡!!!' : '올!!!');
+            alert(hasWrong ? '땡!' : '올!');
         })
         
-        // async function startMelody(){
-        //     let note;
-        //     for(let i = 0; i < 5; i++){
-        //         note = getRandomNum(1, 13);
-        //         state.quizNoteList.push(note);
-        //         await sound(`note${getRandomNum(1, 13)}`);
-        //     }
-        // }
 
+        btn_playMyNote.addEventListener('click', () => {
+            startMelody(state.noteList.map(x => x = x.note));
+        })
+        btn_playQuizNote.addEventListener('click', () => {
+            startMelody(state.quizNoteList.map(x => x = 'note' + x));
+        });
+        btn_reset.addEventListener('click', () => {
+            if(!confirm('초기화 하시겠습니까?')) return;
+            window.location.reload();
+        })
     </script>
 </body>
 </html>
