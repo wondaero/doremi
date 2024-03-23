@@ -291,8 +291,8 @@
     <footer>
         <button id="btn_submit" class="btn-submit">제출</button>
         <div id="afterSubmitBtns" class="after-submit none">
-            <button id="btn_playMyNote">내꺼</button>
-            <button id="btn_playQuizNote">문제</button>
+            <button id="btn_playMyNote">최쭈호</button>
+            <button id="btn_playQuizNote">정답</button>
             <button id="btn_reset">초기화</button>
         </div>
     </footer>
@@ -320,8 +320,18 @@
         const state = {
             noteList: [],
             quizNoteList: [],
-            afterSubmit: false
+            afterSubmit: false,
+            audioObj: {}
         };
+
+        for(let i = 0; i < 13; i++){
+            const audio = new Audio();
+            const noteName = 'note' + (i + 1);
+            audio.src = `./assets/audio/${noteName}.mp3`;
+            audio.preload = 'auto';
+
+            state.audioObj[noteName] = audio;
+        }
 
         piano.querySelectorAll('[data-id]').forEach(k => {
             k.addEventListener('click', (e) => {
@@ -349,9 +359,11 @@
                 // const audio = document.querySelector('#audio-' + note);
                 audio.play();
 
-                audio.addEventListener('ended', function(){
+                state.audioObj[note].play();
+
+                state.audioObj[note].onended = function(){
                     resolve(true);
-                })
+                };
             });
         }
 
@@ -375,6 +387,7 @@
                 repeatCnt.style.display = 'inline-flex';
                 repeatCnt.textContent = (+repeatCnt.textContent || 0) + 1;
             };
+
 
             startMelody(state.quizNoteList.map(x => x = 'note' + x), () => {
                 btn_submit.style.display = 'inline-flex';
