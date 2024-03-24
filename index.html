@@ -99,6 +99,10 @@
             transform: rotate(-30deg);
             box-sizing: border-box;
         }
+        
+        .sheet-music ul li.wrong span{background: #f00;}
+        .sheet-music ul li.correct span{background: #0f0;}
+
         .sheet-music ul li.note2:before,
         .sheet-music ul li.note4:before,
         .sheet-music ul li.note4:before,
@@ -442,13 +446,18 @@
                 alert('노트를 더 채워주세요.');
                 return;
             }
+
             state.afterSubmit = true;
             let hasWrong = false;
 
             for(let i = 0; i < 5; i++){
                 if(+state.noteList[i].note.substr(4) !== +state.quizNoteList[i]){
                     hasWrong = true;
-                    break;
+                    pickedNoteList.querySelectorAll('li')[i].classList.add('wrong');
+
+                    // break;
+                }else{
+                    pickedNoteList.querySelectorAll('li')[i].classList.add('correct');
                 }
             }
 
