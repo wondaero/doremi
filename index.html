@@ -60,8 +60,12 @@
             height: 100px;
         }
         .sheet-music .lines div{
-            border: 1px solid rgba(0, 0, 0, .8);
-            margin-bottom: 10px;
+            border-top: 1px solid rgba(0, 0, 0, .2);
+            margin-bottom: 9px;
+            box-sizing: border-box;
+        }
+        .sheet-music .lines div:last-of-type{
+            opacity: .1;
         }
 
         .sheet-music ul{
@@ -129,9 +133,20 @@
             left: -7px;
         }
 
-        .note1{
-            top: 57px;
-        }
+        /* .note1{top: 50px;}
+        .note2{top: 50px;}
+        .note3{top: 45px;}
+        .note4{top: 45px;}
+        .note5{top: 39px;}
+        .note6{top: 34px;}
+        .note7{top: 34px;}
+        .note8{top: 28px;}
+        .note9{top: 28px;}
+        .note10{top: 24px;}
+        .note11{top: 24px;}
+        .note12{top: 18px;}
+        .note13{top: 13px;} */
+
         .note1 span:before,
         .note2 span:before{
             position: absolute;
@@ -140,22 +155,7 @@
             border-top: 1px solid #000;
             transform: rotate(30deg) translate(-2px, 4px);
         }
-        .note2{
-            top: 57px;
-        }
-        .note3{top: 51px;}
-        .note4{top: 51px;}
-        .note5{top: 45px;}
-        .note6{top: 39px;}
-        .note7{ /*파#*/
-            top: 39px;
-        }
-        .note8{top: 33px;}
-        .note9{top: 33px;}
-        .note10{top: 27px;}
-        .note11{top: 27px;}
-        .note12{top: 21px;}
-        .note13{top: 15px;}
+
 
         .piano-wrapper{
             display: flex;
@@ -220,7 +220,7 @@
             background: orange;
             border: 0;
             display: inline-flex;
-            width: 120px;
+            width: 80px;
             height: 40px;
             align-items: center;
             justify-content: center;
@@ -245,13 +245,13 @@
     <h3>들리는 음에 맞춰 건반을 쳐주세요.<span id="repeatCnt"></span></h3>
 
     <div class="sheet-music">
-        <div class="lines">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <!-- <div></div> -->
+        <div id="lines" class="lines">
+            <div id="l6"></div>
+            <div id="l5"></div>
+            <div id="l4"></div>
+            <div id="l3"></div>
+            <div id="l2"></div>
+            <div id="l1"></div>
         </div>
         <ul id="pickedNoteList">
             <!-- <li class="note1"><span></span></li>
@@ -296,22 +296,6 @@
             <button id="btn_reset">초기화</button>
         </div>
     </footer>
-<!-- 
-    <div class="audios">
-        <audio id="audio-note1" controls src="./assets/audio/note1.mp3"></audio>
-        <audio id="audio-note2" controls src="./assets/audio/note2.mp3"></audio>
-        <audio id="audio-note3" controls src="./assets/audio/note3.mp3"></audio>
-        <audio id="audio-note4" controls src="./assets/audio/note4.mp3"></audio>
-        <audio id="audio-note5" controls src="./assets/audio/note5.mp3"></audio>
-        <audio id="audio-note6" controls src="./assets/audio/note6.mp3"></audio>
-        <audio id="audio-note7" controls src="./assets/audio/note7.mp3"></audio>
-        <audio id="audio-note8" controls src="./assets/audio/note8.mp3"></audio>
-        <audio id="audio-note9" controls src="./assets/audio/note9.mp3"></audio>
-        <audio id="audio-note10" controls src="./assets/audio/note10.mp3"></audio>
-        <audio id="audio-note11" controls src="./assets/audio/note11.mp3"></audio>
-        <audio id="audio-note12" controls src="./assets/audio/note12.mp3"></audio>
-        <audio id="audio-note13" controls src="./assets/audio/note13.mp3"></audio>
-    </div> -->
 
     <script>
         const char = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -321,7 +305,22 @@
             noteList: [],
             quizNoteList: [],
             afterSubmit: false,
-            audioObj: {}
+            audioObj: {},
+            line: {
+                note1: l1,  //도
+                note2: l1,  //도#
+                note3: l2,  //레
+                note4: l2,  //레#
+                note5: l2,  //미
+                note6: l3,  //파
+                note7: l3,  //파#
+                note8: l3,  //솔
+                note9: l3,  //솔#
+                note10: l4,  //라
+                note11: l4,  //라#
+                note12: l4,  //시
+                note13: l5,  //도
+            }
         };
 
         for(let i = 0; i < 13; i++){
@@ -335,7 +334,7 @@
 
         piano.querySelectorAll('[data-id]').forEach(k => {
             k.addEventListener('click', (e) => {
-                if(state.quizNoteList.length){
+                if(1 || state.quizNoteList.length){
                     if(state.noteList.length < 5){
                         state.noteList.push({
                             noteID: getNoteId(10),
@@ -356,7 +355,6 @@
             return new Promise((resolve, rej) => {
                 const audio = new Audio();
                 audio.src = `./assets/audio/${note}.mp3`;
-                // const audio = document.querySelector('#audio-' + note);
                 audio.play();
 
                 state.audioObj[note].play();
@@ -417,6 +415,17 @@
             li.dataset.id = note.noteID;
             li.classList.add(note.note);
             li.innerHTML = `<span></span>`;
+
+            let topValue = state.line[note.note].getBoundingClientRect().top - lines.getBoundingClientRect().top + 1;
+            const simpleNote = +note.note.substr(4);
+
+            if(simpleNote === 1 || simpleNote === 2 || simpleNote === 5 || simpleNote === 8 || simpleNote === 9 || simpleNote === 12){
+                topValue -= 5;
+            }
+
+            // li.style.top = topValue + 'px';
+            li.setAttribute('style', `top: ${topValue}px;`);
+
             li.addEventListener('click', removeNote);
             
             return li;
@@ -461,6 +470,8 @@
             if(!confirm('초기화 하시겠습니까?')) return;
             window.location.reload();
         })
+
+        
     </script>
 </body>
 </html>
