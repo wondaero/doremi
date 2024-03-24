@@ -334,7 +334,7 @@
 
         piano.querySelectorAll('[data-id]').forEach(k => {
             k.addEventListener('click', (e) => {
-                if(1 || state.quizNoteList.length){
+                if(state.quizNoteList.length){
                     if(state.noteList.length < 5){
                         state.noteList.push({
                             noteID: getNoteId(10),
@@ -444,7 +444,6 @@
             }
             state.afterSubmit = true;
             let hasWrong = false;
-
 
             for(let i = 0; i < 5; i++){
                 if(+state.noteList[i].note.substr(4) !== +state.quizNoteList[i]){
