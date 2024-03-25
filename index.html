@@ -57,7 +57,7 @@
         }
         .sheet-music{
             position: relative;
-            height: 100px;
+            margin-bottom: 50px;
         }
         .sheet-music .lines div{
             border-top: 1px solid rgba(0, 0, 0, .2);
@@ -100,8 +100,12 @@
             box-sizing: border-box;
         }
 
-        .sheet-music ul li.wrong span{background: #f00;}
-        .sheet-music ul li.correct span{background: #0f0;}
+        .sheet-music ul.answer-list li span{
+            background: orange;
+        }
+
+        /* .sheet-music ul li.wrong span{background: #f00;}
+        .sheet-music ul li.correct span{background: #0f0;} */
 
         .sheet-music ul li.note2:before,
         .sheet-music ul li.note4:before,
@@ -137,19 +141,25 @@
             left: -7px;
         }
 
-        /* .note1{top: 50px;}
-        .note2{top: 50px;}
-        .note3{top: 45px;}
-        .note4{top: 45px;}
-        .note5{top: 39px;}
-        .note6{top: 34px;}
-        .note7{top: 34px;}
-        .note8{top: 28px;}
-        .note9{top: 28px;}
-        .note10{top: 24px;}
-        .note11{top: 24px;}
-        .note12{top: 18px;}
-        .note13{top: 13px;} */
+        .sheet-music ul.answer-list li.note2:before,
+        .sheet-music ul.answer-list li.note4:before,
+        .sheet-music ul.answer-list li.note4:before,
+        .sheet-music ul.answer-list li.note7:before,
+        .sheet-music ul.answer-list li.note9:before,
+        .sheet-music ul.answer-list li.note11:before{
+            border-top: 1px solid orange;
+            border-bottom: 1px solid orange;
+        }
+
+        .sheet-music ul.answer-list li.note2:after,
+        .sheet-music ul.answer-list li.note4:after,
+        .sheet-music ul.answer-list li.note4:after,
+        .sheet-music ul.answer-list li.note7:after,
+        .sheet-music ul.answer-list li.note9:after,
+        .sheet-music ul.answer-list li.note11:after{
+            border-left: 1px solid orange;
+            border-right: 1px solid orange;
+        }
 
         .note1 span:before,
         .note2 span:before{
@@ -172,8 +182,8 @@
             display: flex;
         }
         .piano .white{
-            width: 30px;
-            height: 100px;
+            width: 60px;
+            height: 200px;
             border-radius: 0 0 5px 5px;
             border: 1px solid #eee;
         }
@@ -182,8 +192,8 @@
         }
         .piano .black{
             position: absolute;
-            width: 20px;
-            height: 60px;
+            width: 40px;
+            height: 120px;
             border-radius: 0 0 3px 3px;
             background: #000;
             top: 0;
@@ -191,11 +201,6 @@
         .piano .black:active{
             background: rgba(255, 0, 255, .5);
         }
-        .piano .black:nth-of-type(1){left: 22px;}
-        .piano .black:nth-of-type(2){left: 54px;}
-        .piano .black:nth-of-type(3){left: 118px;}
-        .piano .black:nth-of-type(4){left: 150px;}
-        .piano .black:nth-of-type(5){left: 182px;}
 
         footer{
             margin-top: 30px;
@@ -231,14 +236,27 @@
             color: #fff;
             border-radius: 5px;
             margin-left: 8px;
+            font-weight: 900;
         }
         footer .after-submit button:last-of-type{
             margin-right: 0;
+            color: orange;
+            background: 0;
+            border: 1px solid orange;
         }
         
         .audios{height: 0;}
 
         .none{display: none;}
+
+        @media(max-width: 540px){
+            .piano .white{width: 45px; height: 150px;}
+            .piano .black{width: 30px; height: 90px;}
+        }
+        @media(max-width: 400px){
+            .piano .white{width: 30px; height: 100px;}
+            .piano .black{width: 20px; height: 60px;}
+        }
 
     </style>
 </head>
@@ -248,7 +266,7 @@
     </header>
     <h3>들리는 음에 맞춰 건반을 쳐주세요.<span id="repeatCnt"></span></h3>
 
-    <div class="sheet-music">
+    <div id="sheetMusic" class="sheet-music">
         <div id="lines" class="lines">
             <div id="l6"></div>
             <div id="l5"></div>
@@ -257,6 +275,7 @@
             <div id="l2"></div>
             <div id="l1"></div>
         </div>
+        <ul id="answerList" class="answer-list"></ul>
         <ul id="pickedNoteList">
             <!-- <li class="note1"><span></span></li>
             <li class="note2"><span></span></li>
@@ -272,14 +291,15 @@
             <li class="note12"><span></span></li>
             <li class="note13"><span></span></li> -->
         </ul>
+        
     </div>
     <div class="piano-wrapper">
         <div id="piano" class="piano">
-            <div data-id="note2" class="black"></div>
-            <div data-id="note4" class="black"></div>
-            <div data-id="note7" class="black"></div>
-            <div data-id="note9" class="black"></div>
-            <div data-id="note11" class="black"></div>
+            <div data-id="note2" data-color="black" class="black"></div>
+            <div data-id="note4" data-color="black" class="black"></div>
+            <div data-id="note7" data-color="black" class="black"></div>
+            <div data-id="note9" data-color="black" class="black"></div>
+            <div data-id="note11" data-color="black" class="black"></div>
     
     
             <div data-id="note1" class="white"></div>
@@ -295,9 +315,9 @@
     <footer>
         <button id="btn_submit" class="btn-submit">제출</button>
         <div id="afterSubmitBtns" class="after-submit none">
-            <button id="btn_playMyNote">최쭈호</button>
+            <button id="btn_playMyNote">최쭈안</button>
             <button id="btn_playQuizNote">정답</button>
-            <button id="btn_reset">초기화</button>
+            <button id="btn_reset" class="reverse">초기화</button>
         </div>
     </footer>
 
@@ -324,49 +344,151 @@
                 note11: l4,  //라#
                 note12: l4,  //시
                 note13: l5,  //도
-            }
+            },
         };
 
-        for(let i = 0; i < 13; i++){
-            const audio = new Audio();
-            const noteName = 'note' + (i + 1);
-            audio.src = `./assets/audio/${noteName}.mp3`;
-            audio.preload = 'auto';
+        init();
 
-            state.audioObj[noteName] = audio;
-        }
+        function init(){
 
-        piano.querySelectorAll('[data-id]').forEach(k => {
-            k.addEventListener('click', (e) => {
-                if(state.quizNoteList.length){
-                    if(state.noteList.length < 5){
-                        state.noteList.push({
-                            noteID: getNoteId(10),
-                            note: e.target.dataset.id
-                        });
-    
-                        setNoteUI();
+            for(let i = 0; i < 13; i++){
+                const audio = new Audio();
+                const noteName = 'note' + (i + 1);
+                audio.src = `./assets/audio/${noteName}.mp3`;
+                audio.preload = 'auto';
+
+                state.audioObj[noteName] = audio;
+            }
+
+            piano.querySelectorAll('[data-id]').forEach(k => {
+                k.addEventListener('click', (e) => {
+                    if(state.quizNoteList.length){
+                        if(state.noteList.length < 5){
+                            state.noteList.push({
+                                noteID: getNoteId(10),
+                                note: e.target.dataset.id
+                            });
+
+                            setNoteUI();
+                        }else{
+                            alert('5개를 넘길 수 없습니다.');
+                        }
                     }else{
-                        alert('5개를 넘길 수 없습니다.');
+                        sound(e.target.dataset.id, true);
+                    }
+                })
+            })
+
+
+            btn_submit.addEventListener('click', () => {
+                if(state.noteList.length !== 5){
+                    alert('노트를 더 채워주세요.');
+                    return;
+                }
+
+                state.afterSubmit = true;
+                let hasWrong = false;
+
+                for(let i = 0; i < 5; i++){
+                    if(+state.noteList[i].note.substr(4) !== +state.quizNoteList[i]){
+                        hasWrong = true;
+                        pickedNoteList.querySelectorAll('li')[i].classList.add('wrong');
+                        // break;
+                    }else{
+                        pickedNoteList.querySelectorAll('li')[i].classList.add('correct');
+                    }
+
+                    answerList.appendChild(tmpl({note: 'note' + state.quizNoteList[i]}));
+
+                    sheetMusic.style.pointerEvents = 'none';
+                }
+
+                answerList.style.zIndex = 1;
+
+                btn_submit.style.display = 'none';
+                afterSubmitBtns.style.display = 'flex';
+                
+                alert(hasWrong ? '땡!' : '올!');
+            })
+            
+
+            btn_playMyNote.addEventListener('click', () => {
+                startMelody(state.noteList.map(x => x = x.note));
+            });
+
+            btn_playQuizNote.addEventListener('click', () => {
+                startMelody(state.quizNoteList.map(x => x = 'note' + x));
+            });
+
+            btn_reset.addEventListener('click', () => {
+                if(!confirm('초기화 하시겠습니까?')) return;
+                window.location.reload();
+            });
+
+            btn_start.addEventListener('click', () => {
+                if(state.afterSubmit === true) return;
+
+                if(!state.quizNoteList.length){
+                    let note;
+                    for(let i = 0; i < 5; i++){
+                        note = getRandomNum(1, 13);
+                        state.quizNoteList.push(note);
                     }
                 }else{
-                    sound(e.target.dataset.id);
-                }
-            })
-        })
+                    repeatCnt.style.display = 'inline-flex';
+                    repeatCnt.textContent = (+repeatCnt.textContent || 0) + 1;
+                };
 
-        function sound(note){
-            console.log('사운드')
+
+                startMelody(state.quizNoteList.map(x => x = 'note' + x), () => {
+                    btn_submit.style.display = 'inline-flex';
+                });
+            });
+
+            let resizeLv;
+
+            window.addEventListener('resize', () => {
+                const width = window.innerWidth;
+                let curLv;
+
+                if(width < 400) curLv = 1;
+                else if(width < 520) curLv = 2;
+                else curLv = 3;
+
+                if(resizeLv === curLv) return;
+
+                resizeLv = curLv;
+                resizeUI();
+            });
+
+            const event1 = new Event('resize');
+            window.dispatchEvent(event1);
+        }
+
+        function resizeUI(){
+            document.querySelectorAll('[data-color="black"]').forEach((b) => {
+                const idx = b.dataset.id.substr(4);
+                const target = document.querySelector('[data-id="note' + (+idx + 1) + '"]');
+
+                b.style.left = (target.getBoundingClientRect().left - piano.getBoundingClientRect().left - (b.clientWidth / 2)) + 'px'; 
+            })
+        }
+
+
+        function sound(note, rep){
             return new Promise((resolve, rej) => {
-                // const audio = new Audio();
-                // audio.src = `./assets/audio/${note}.mp3`;
-                // audio.play();
+
+                if(!state.audioObj[note].ended) state.audioObj[note].load();
 
                 state.audioObj[note].play();
 
-                state.audioObj[note].onended = function(){
+                if(rep){
                     resolve(true);
-                };
+                }else{
+                    state.audioObj[note].onended = function(){
+                        resolve(true);
+                    };
+                }
             });
         }
 
@@ -377,25 +499,6 @@
             if(cb && typeof cb === 'function') cb();
         }
 
-        btn_start.addEventListener('click', () => {
-            if(state.afterSubmit === true) return;
-
-            if(!state.quizNoteList.length){
-                let note;
-                for(let i = 0; i < 5; i++){
-                    note = getRandomNum(1, 13);
-                    state.quizNoteList.push(note);
-                }
-            }else{
-                repeatCnt.style.display = 'inline-flex';
-                repeatCnt.textContent = (+repeatCnt.textContent || 0) + 1;
-            };
-
-
-            startMelody(state.quizNoteList.map(x => x = 'note' + x), () => {
-                btn_submit.style.display = 'inline-flex';
-            });
-        });
 
         function getNoteId(len = 10){
             let noteId = '';
@@ -413,9 +516,9 @@
             })
         }
 
-        setNoteUI();
+        // setNoteUI();
 
-        function tmpl(note){
+        function tmpl(note, cb){
             const li = document.createElement('li');
             li.dataset.id = note.noteID;
             li.classList.add(note.note);
@@ -441,46 +544,6 @@
 
             setNoteUI();
         }
-
-        btn_submit.addEventListener('click', () => {
-            if(state.noteList.length !== 5){
-                alert('노트를 더 채워주세요.');
-                return;
-            }
-
-            state.afterSubmit = true;
-            let hasWrong = false;
-
-            for(let i = 0; i < 5; i++){
-                if(+state.noteList[i].note.substr(4) !== +state.quizNoteList[i]){
-                    hasWrong = true;
-                    pickedNoteList.querySelectorAll('li')[i].classList.add('wrong');
-
-                    // break;
-                }else{
-                    pickedNoteList.querySelectorAll('li')[i].classList.add('correct');
-                }
-            }
-
-            btn_submit.style.display = 'none';
-            afterSubmitBtns.style.display = 'flex';
-            
-            alert(hasWrong ? '땡!' : '올!');
-        })
-        
-
-        btn_playMyNote.addEventListener('click', () => {
-            startMelody(state.noteList.map(x => x = x.note));
-        })
-        btn_playQuizNote.addEventListener('click', () => {
-            startMelody(state.quizNoteList.map(x => x = 'note' + x));
-        });
-        btn_reset.addEventListener('click', () => {
-            if(!confirm('초기화 하시겠습니까?')) return;
-            window.location.reload();
-        })
-
-        
     </script>
 </body>
 </html>
