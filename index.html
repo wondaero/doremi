@@ -99,7 +99,7 @@
             transform: rotate(-30deg);
             box-sizing: border-box;
         }
-        
+
         .sheet-music ul li.wrong span{background: #f00;}
         .sheet-music ul li.correct span{background: #0f0;}
 
@@ -356,10 +356,11 @@
         })
 
         function sound(note){
+            console.log('사운드')
             return new Promise((resolve, rej) => {
-                const audio = new Audio();
-                audio.src = `./assets/audio/${note}.mp3`;
-                audio.play();
+                // const audio = new Audio();
+                // audio.src = `./assets/audio/${note}.mp3`;
+                // audio.play();
 
                 state.audioObj[note].play();
 
